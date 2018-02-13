@@ -37,10 +37,7 @@ int main(int argc, char **argv)
 	// Declare struct array to read times and censored flag 
 	//  CHANGE TO MALLOC FOR DYNAMIC ARRAY SIZES
 	struct tuple data[200]; // There are 200 data points
-	int arrlen = 0;   // This is the next element to write
-	
-	
-	
+	int arrlen = 0;   // This is the next element to write	
 	
 	// Read input to struct array
 	double time;
@@ -55,12 +52,10 @@ int main(int argc, char **argv)
 	long unsigned int lflen = sizeof(struct tuple);
 	qsort(data, arrlen, lflen, comp);
 	
-		//printf("Failures\n");
+	/*	//printf("Failures\n");
 	for (int i = 0; i < arrlen; i++) {
-		if (data[i].censored) {
-			printf("%lf\n", data[i].timeval);
-		}
-	}
+		printf("%lf %i\n", data[i].timeval, data[i].censored);
+	}*/
 	
 	
 	// Declare vars for storing survival and variance functions
@@ -70,11 +65,14 @@ int main(int argc, char **argv)
 	double variance[200];
 	double varsum = 0;      // store the cumulative summation
 	int arrwrite = 0;		// element of arrays to write to
+
 	
 	// Declare temp variables for loop
 	int dj = 0;
+	int rj = 0;
 	int i = 0;
-	int j = 0;
+	int j = 0; // i to j is a range of identical times
+
 		
 	// Loop through data performing calcs
 	while (i < arrlen) { 
@@ -83,7 +81,9 @@ int main(int argc, char **argv)
 		j = i + 1;
 		while (j < arrlen && data[j].timeval == data[i].timeval) {
 			j++;
-		} // final value of j will be such that 200 - j is risk set
+		} 
+		// final value of j will be such that 200 - i is the risk set
+		rj = 200-i;
 		
 		// Find number of deaths in range
 		for (int k = i; k < j; k++) {
@@ -91,9 +91,9 @@ int main(int argc, char **argv)
 		}
 		
 		// Calculate survival dist and variance if there were deaths
-		if (dj > 0) { // ignore if this is censored
-			survprod = survprod * (1.0-(float)dj/(200-j));
-			varsum += (float)dj/((199-i)*(199-i-dj));
+		if (dj > 0) { // ignore all data is censored
+			survprod = survprod * (1.0-(float)dj/rj);
+			varsum += (float)dj/(rj*(rj-dj));
 			times[arrwrite] = data[i].timeval; 
 			survival[arrwrite] = survprod;
 			variance[arrwrite] = pow(survprod, 2.0) * varsum;
