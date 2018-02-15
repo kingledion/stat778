@@ -6,9 +6,8 @@ Created on Mon Feb 12 18:43:06 2018
 @author: dhartig
 """
 
-import subprocess
+import subprocess, numpy as np
 from matplotlib import pyplot as plt
-from math import sqrt
 
 times = []
 values = []
@@ -22,10 +21,14 @@ for row in complete.stdout.decode("utf-8").splitlines():
     values.append(float(val))
     variances.append(float(var))
     
+vals = np.array(values)
+    
 # 95% confidence interval is 1.96*sqrt(variance)
-variances = [1.96*sqrt(v) for v in variances]
+variances = np.sqrt(np.array(variances)) * 1.96
+err_hi = vals + variances
+err_lo = vals - variances
 
-plt.errorbar(times, values, yerr=variances, fmt = 'bo', ecolor='r', capsize=2)
+plt.step(times, vals, 'b-', times, err_hi, 'r-', times, err_lo, 'r-')
 plt.show()
     
 

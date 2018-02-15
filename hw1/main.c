@@ -28,8 +28,8 @@ int main(int argc, char **argv)
 {
 	
 	// Open input file
-	FILE *fp;
-	if( (fp = fopen("/opt/school/stat778/hw1/HW1.dat", "r")) == NULL) {
+	FILE *fpin;
+	if( (fpin = fopen("/opt/school/stat778/hw1/HW1.dat", "r")) == NULL) {
 		printf("File not found\n");
 		exit(1);	
 	}
@@ -42,20 +42,16 @@ int main(int argc, char **argv)
 	// Read input to struct array
 	double time;
 	int flag;
-	while (fscanf(fp, "%lf %i", &time, &flag) == 2) {
+	while (fscanf(fpin, "%lf %i", &time, &flag) == 2) {
 		struct tuple t = {time, flag};
 		data[arrlen] = t;
 		arrlen++;
 	}
+	fclose(fpin);
 	
 	// Sort arrays
 	long unsigned int lflen = sizeof(struct tuple);
 	qsort(data, arrlen, lflen, comp);
-	
-	/*	//printf("Failures\n");
-	for (int i = 0; i < arrlen; i++) {
-		printf("%lf %i\n", data[i].timeval, data[i].censored);
-	}*/
 	
 	
 	// Declare vars for storing survival and variance functions
@@ -64,7 +60,7 @@ int main(int argc, char **argv)
 	double survprod = 1.0;  // store the cumulative product
 	double variance[200];
 	double varsum = 0;      // store the cumulative summation
-	int arrwrite = 0;		// element of arrays to write to
+
 
 	
 	// Declare temp variables for loop
@@ -72,6 +68,12 @@ int main(int argc, char **argv)
 	int rj = 0;
 	int i = 0;
 	int j = 0; // i to j is a range of identical times
+	
+	// Write surv func = 1 at time = 0
+	times[0] = 0.0;
+	survival[0] = 1.0;
+	variance[0] = 0.0;
+	int arrwrite = 1;		// element of arrays to write to 
 
 		
 	// Loop through data performing calcs
@@ -105,14 +107,32 @@ int main(int argc, char **argv)
 		dj = 0;
 	}
 	
+	// Write last time, if that time censored
 	
 	
-	//printf("Failures\n");
+	if (data[arrlen-1].timeval > times[arrwrite-1]) {
+		times[arrwrite] = data[arrlen-1].timeval;
+		survival[arrwrite] = survprod;
+		variance[arrwrite] = pow(survprod, 2.0) * varsum;
+		arrwrite++;
+	}
+	
+	// Open input file
+	FILE *fpout = fopen("/opt/school/stat778/hw1/output.dat", "w");
+	if(fpout == NULL) {
+		printf("Output file not found\n");
+	}
+	
+	
+	// Write to stdout and file
 	for (i = 0; i < arrwrite; i++) {
 		printf("%lf %lf %lf\n", times[i], survival[i], variance[i]);
+		if (fpout != NULL) {
+			fprintf(fpout, "%lf %lf %lf\n", times[i], survival[i], variance[i]);
+		}
 	}
 	
 
 	
-	return fclose(fp);
+	return fclose(fpout);
 }
