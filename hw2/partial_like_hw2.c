@@ -102,13 +102,7 @@ int main(int argc, char **argv)
 	
 	// print answer to stdout
 	printf("Log likelihood = %lf\n", cumLogLikelihood);
-	
-	/*
-	// Write to stdout and file
-	for (int i = 0; i < arrlen; i++) {
-		printf("%lf %i %lf %i\n", data[i].timeval, data[i].censored, data[i].x1, data[i].x2);
-	}*/
-	
+
 
 	return 0;
 }
