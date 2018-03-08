@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <gsl/gsl_math.h>
 
 
 void getRandNorm(double* randnorm, int n) 
@@ -28,31 +29,29 @@ void getRandNorm(double* randnorm, int n)
 	}	
 }
 
-void estGaussParams(double* sample, int arrlen, double* meanEst, double* meanVar, double* varEst, double* varVar) {
+void estGaussParams(double* sample, int arrlen, double* meanEst, double* varEst) {
 	
 
 	double* iterator = sample;
 	
 	// mean is sample mean
 	double cumSum = 0;
-	for (int i = 0; i < arrlen; i++, ++iterator) {
-		cumSum += *sample;
-		printf("%lf\n", cumSum);
+	for (int i = 0; i < arrlen; i++, iterator++) {
+		cumSum += *iterator;
 	}
-	double sampleMean = cumSum / arrlen;
+	double sampleMean = cumSum / (double) arrlen;
+
 	
 	// use sample mean to calculate sample variance
 	iterator = sample;
 	cumSum = 0;
-	for (int i = 0; i < arrlen; i++, ++iterator) {
-		cumSum += pow(*sample - sampleMean, 2.0);
+	for (int i = 0; i < arrlen; i++, iterator++) {
+		cumSum += pow(*iterator - sampleMean, 2.0);
 	}
-	double sampleVar = cumSum / arrlen;
+	double sampleVar = cumSum / (double) arrlen;
 	
-	meanEst = &sampleMean;
-	varEst = &sampleVar;
-	*meanVar = 0.0;
-	*varVar = 0.0;
+	*meanEst = sampleMean;
+	*varEst = sampleVar;
 	
 	
 	
@@ -88,12 +87,28 @@ int main(int argc, char **argv)
 	}*/
 	
 	// Declare variables for estimates
-	double* meanEst; double* meanVar;
-	double* varEst; double* varVar;
+	double meanEst = 0; 
+	double varEst = 0; 
 	
-	estGaussParams(randnorm, n, meanEst, meanVar, varEst, varVar);
+	estGaussParams(randnorm, n, &meanEst, &varEst);
 	
-	printf("Estimated Mean: %lf\nMean variance: %lf\nEstimated Variance: %lf\nVariance variance: %lf\n", *meanEst, *meanVar, *varEst, *varVar);
+	// I had to isntall libgsl myself to get gaussian and chi^2 distributions
+	// so I will hard code instead of referencing package so this runs on any
+	// machine
+	
+	double chiLo = gsl_cdf_chisq_P(0.975, n-1);
+	printf("ChiLo: %lf\n", chiLo);
+	
+	// For 95% interval z = 1.960
+	double meanLo = meanEst - 1.960*sqrt(varEst/n);
+	double meanHi = meanEst + 1.960*sqrt(varEst/n);
+	// Chi-square values for df= n-1 = 199 are 0.975=239.96; 0.025=161.826
+	double varLo = varEst * (n-1) / 239.960;
+	double varHi = varEst * (n-1) / 161.826;
+	
+	
+	printf("Estimated Mean: (%lf, %lf)\n", meanLo, meanHi);
+	printf("Estimated Variance: (%lf, %lf)\n", varLo, varHi);
 	
 	return 0;
 }
