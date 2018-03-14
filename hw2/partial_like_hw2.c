@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 	
 	// Open input file
 	FILE *fpin;
-	if( (fpin = fopen("/opt/school/stat778/hw2/HW2_2018.dat", "r")) == NULL) {
+	if( (fpin = fopen("./HW2_2018.dat", "r")) == NULL) {
 		printf("File not found\n");
 		exit(1);	
 	}
