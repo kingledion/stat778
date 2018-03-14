@@ -5,7 +5,7 @@
 // Structure to store tuples of data
 struct tuple {
     double timeval; 
-    int censored;
+    int notcensored;
 	double x1;
 	int x2;
 	
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 
 	// Process arguments, store parameters in b1, b2
 	if (argc != 3) {
-		printf("Pass only two arguments; b1 and b2 = parameter values\n");
+		printf("Pass only three arguments; b1 and b2 = parameter values\n");
 		return 0;
 	}
 	// No error checking for bad input formats
@@ -75,21 +75,14 @@ int main(int argc, char **argv)
 	// Iterate through death or censor times
 	for (i = 0; i < arrlen; i++) { 
 		
-		// There is no way to guarantee that we will only find one death per delta_u
-		// This is not a problem with the homework data set, but something that 
-		// should be accounted for in a more robust implementation
-		
-		// Update log likelihood sum if this is a death, not censored
-		if (!data[i].censored) {
+		// Update log likelihood sum if this is a distinct death, not censored
+		if (data[i].notcensored) {
 			
 			// scalar product of parameters and covariates for current death
 			zb = b1 * data[i].x1 + b2 * data[i].x2;
 			
-			// summed scalar product for risk set, all points Y >= u where u is time of 
-			// current death in the loop.
-			// I don't see any value in precalculating this; the calculation time is the same
-			// whether pre-calculating or doing it concurrent with the log likelihood loop, 
-			// and calculating concurrently doesn't require any extra memory.
+			// Summed scalar product for risk set, all points Y >= t_j where t_j is time of 
+			// current death in the loop. The current death is in the risk set.
 			riskScalarProd = 0;
 			for (j = i; j < arrlen; j++) {
 				riskScalarProd += exp(b1 * data[j].x1 + b2 * data[j].x2);
