@@ -3,18 +3,21 @@
   <Project Name="class1test" Path="class1test/class1test.project" Active="No"/>
   <Project Name="hw1" Path="hw1/hw1.project"/>
   <Project Name="hw2" Path="hw2/hw2.project" Active="Yes"/>
+  <Project Name="midterm" Path="midterm/midterm.project"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
       <Project Name="class1test" ConfigName="Debug"/>
       <Project Name="hw1" ConfigName="Debug"/>
       <Project Name="hw2" ConfigName="Debug"/>
+      <Project Name="midterm" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
       <Project Name="class1test" ConfigName="Release"/>
       <Project Name="hw1" ConfigName="Release"/>
       <Project Name="hw2" ConfigName="Release"/>
+      <Project Name="midterm" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
