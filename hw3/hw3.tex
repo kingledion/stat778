@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage[margin=0.5in]{geometry}
+
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+\title{STAT 788 - Homework 2}
+\author{Daniel Hartig}
+
+
+\begin{document}
+\maketitle
+
+\section{How to run}
+
+The source file for HW3 is  \verb!partial_like_hw3.c!. This program takes two arguments at the command line, the initial guesses of the two parameters $\beta_1$ and $\beta_2$. These arguments are read at the command line as \verb!b1! and \verb!b2!. The homework assignment is compiled by
+\begin{quote}\verb!gcc -o hw3 partial_like_hw3.c -lm!.\end{quote}
+The data file \verb!HW2_2018.dat! must be in the same folder as the executable; then this is executed by 
+\begin{quote}\verb!./hw3 0.2 0.2!\end{quote}
+with resulting output 
+\begin{quote}\verb!Maxima: (0.040532, 0.060655)!.\end{quote}
+
+\section*{Methodology}
+
+As given in Chapter 6 of Zhang, the log-likelihood equation for the Cox proportional hazards model is 
+\[\mathcal{L}(\bm{\beta}|\bm{z}, u) = \sum_{\text{all grid points }u} dN(u) \left[\bm{z}\bm{\beta}-\log{\left(\sum\exp(\bm{z}\bm{\beta})Y_i(u)\right)}\right].\]
+Given two explanatory variables $z_1$ and $z_2$, such that $\bm{\beta} = \left[\beta_1, \beta_2\right]$, the gradient is 
+\[\nabla\mathcal{L}(\bm{\beta}|\bm{z}, u) = \begin{bmatrix}
+\sum_{\text{all }u} dN(u)\left(z_1 - \dfrac{\sum z_1\exp(\bm{z}\bm{\beta})Y_i(u)}{\sum\exp(\bm{z}\bm{\beta})Y_i(u)}\right)&
+\sum_{\text{all }u} dN(u)\left(z_2 - \dfrac{\sum z_2\exp(\bm{z}\bm{\beta})Y_i(u)}{\sum\exp(\bm{z}\bm{\beta})Y_i(u)}\right)\\
+\end{bmatrix}\]
+
+To find the maximum of the likelihood function, we apply gradient ascent. For a set of parameters $\bm{\beta} = \left[\beta_1, \beta_2\right]$, 
+\[\bm{\beta}_{n+1} = \bm{\beta}_{n} + \gamma\nabla\mathcal{L}(\bm{\beta_n})\] 
+where $\gamma$ is the step size of the ascent. We continue iteration until either the difference between successive iterations is below a certain threshold ($\delta$) or the maximum number of iterations (\texttt{maxiter}) is run. The preset conditions for this implementation are that $\gamma = 0.01$, $\delta = 0.000001$ and $\texttt{maxiter} = 100$.
+
+
+
+
+
+\end{document}
