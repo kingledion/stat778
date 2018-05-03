@@ -55,25 +55,25 @@ void selectRand(double** data, int* response, double** dsub, int* rsub, int arrl
 } 
 
 // Mislabels Y data under possibility S1
-void mislabeled_1(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu_0, double mu_1) {
+void mislabeled_1(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1) {
 	
 	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
 	
 	double rnd;
 	
-	double eta0 = mu_0;
-	double eta1 = mu_1;
+	double eta0 = mu0;
+	double eta1 = mu1;
 	
 	for (int i = 0; i < samplesize; i++) {
 		rnd = rand()/ (double) RAND_MAX;
 
 		if ((*rsub)[i] == 0) {  // eta_0 mislabel error
-			if (rnd < eta_0) {
+			if (rnd < eta0) {
 				(*rsub)[i] = 1;
 			}
 		}
 		else { // rsub[i] == 0; eta_1 mislabel error
-			if (rnd < eta_1) {
+			if (rnd < eta1) {
 				(*rsub)[i] = 0;
 			}
 		}
@@ -82,81 +82,137 @@ void mislabeled_1(double** data, int* response, double*** dsub, int** rsub, int 
 }
 
 // Mislabels Y data under possibility S2
-// NEEDS MUCH MORE WORK!!!!!!!!
-void mislabeled_2(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu_0, double mu_1) {
-	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);	
+void mislabeled_2(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, double* B0, int c) {
+	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
+	
+	double rnd;
+	
+	double eta;
+	
+	for (int i = 0; i < samplesize; i++) {
+		
+		printf("%i %i ", i, (*rsub)[i]);
+		
+		rnd = rand()/ (double) RAND_MAX;
+		double B0x = 0;
+		for (int j = 0; j < c; j++) {
+			B0x += B0[j] * (*dsub)[i][j];
+		}
+		eta = mu0 + (mu1 - mu0) * exp(B0x) / (1 + exp(B0x));
+
+		if ((*rsub)[i] == 0) {  // eta_0 mislabel error
+			if (rnd < eta) {
+				(*rsub)[i] = 1;
+			}
+		}
+		else { // rsub[i] == 0; eta_1 mislabel error
+			if (rnd < eta) {
+				(*rsub)[i] = 0;
+			}
+		}
+		printf("%i\n", (*rsub)[i]);
+	}
 }
 
 // Mislabels Y data under possibility S3
-void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu_0, double mu_1, int c) {
+void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, int c) {
 	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
 	
 	double rnd;
 	
 	// Get 18 random normal variables
-	double* randnorms = malloc(18 * sizeof(double));
-	getRandNorm(0.0, 4.0, randnorms, 18);
+	double* randnorms = malloc(c * 2 * sizeof(double));
+	getRandNorm(0.0, 4.0, randnorms, c * 2);
 	
-	double b1 = malloc(c * sizeof(double));
-	double b2 = malloc(c * sizeof(double));
+	double* b0 = malloc(c * sizeof(double));
+	double* b1 = malloc(c * sizeof(double));
 	
 	for (int j = 0; j < c; j++) {
-		b1[j] = randnorms[j];
-		b2[j] = randnorms[j+c];
+		b0[j] = randnorms[j];
+		b1[j] = randnorms[j+c];
 	}
+	
+	double eta;
 	
 	for (int i = 0; i < samplesize; i++) {
 		
-		printf("%i %i ", i, (*rsub)[i])
+		printf("%i %i ", i, (*rsub)[i]);
 		
 		rnd = rand()/ (double) RAND_MAX;
-		double exp_bjx = 0;
-		for (int j = 0; j < c; j++) {
-			
-		}
 
 		if ((*rsub)[i] == 0) {  // eta_0 mislabel error
+			double bjx = 0;
+			for (int j = 0; j < c; j++) {
+				bjx += b0[j] * (*dsub)[i][j];
+			}
+			eta = mu0 + (mu1 - mu0) * exp(bjx) / (1 + exp(bjx));
+			
 			if (rnd < eta) {
 				(*rsub)[i] = 1;
 			}
 		}
 		else { // rsub[i] == 0; eta_1 mislabel error
+			double bjx = 0;
+			for (int j = 0; j < c; j++) {
+				bjx += b1[j] * (*dsub)[i][j];
+			}
+			
+			eta = mu0 + (mu1 - mu0) * exp(bjx) / (1 + exp(bjx));
 			if (rnd < eta) {
 				(*rsub)[i] = 0;
 			}
 		}
-		printf("%i\n", (*rsub)[i])
+		printf("%i\n", (*rsub)[i]);
 	}
 	
 }
 
 // Mislabels Y data under possibility S4
-void mislabeled_4(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu_1) {
+void mislabeled_4(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, int c) {
 	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
 	
-	double mu_0 = 0.05;   // As specified in the paper
 	double rnd;
 	
+	// Get 18 random normal variables
+	double* randnorms = malloc(2 * sizeof(double)); // Its going to make two rand norms anyways...
+	getRandNorm(2.0, 0.09, randnorms, 2);
+	
+	double a = randnorms[0];
+	
+	double eta;
+	
 	for (int i = 0; i < samplesize; i++) {
+		
+		printf("%i %i ", i, (*rsub)[i]);
+		
 		rnd = rand()/ (double) RAND_MAX;
 
 		if ((*rsub)[i] == 0) {  // eta_0 mislabel error
-			if (rnd < mu_0) {
+			eta = mu0;
+			if (abs(data[i][1] - a) < 3 && abs(data[i][3] + a) < 3) {
+				eta = mu1;
+			}			
+			if (rnd < eta) {
 				(*rsub)[i] = 1;
 			}
 		}
 		else { // rsub[i] == 0; eta_1 mislabel error
-			if (rnd < mu_1) {
+			eta = mu0;
+			if (abs(data[i][1] + a) < 3 && abs(data[i][2] + a) < 3) {
+				eta = mu1;
+			}
+			if (rnd < eta) {
 				(*rsub)[i] = 0;
 			}
 		}
+		printf("%i\n", (*rsub)[i]);
 	}
 		
 }
 
 void standardize(double*** data, int n, int c) { // n rows and c columns
 
-	// Note all j loops start at 1: first column is intercept, do not standardize
+	// Note all j loops start at 1: first colum, colsizen is intercept, do not standardize
 
 	double* sums = malloc(c * sizeof(double)); // assume all doubles
 	double* sumsq = malloc(c * sizeof(double)); 
@@ -201,9 +257,9 @@ void standardize(double*** data, int n, int c) { // n rows and c columns
 
 
 // Built in assumption is that the first column in the dataset is the response data
-// Only works on pima dataset; 
+// Automatically adds intercept as first column of read data
 
-int read_dataset(char* filename, double*** d, int** r) {
+int read_dataset(char* filename, double*** d, int** r, int colsize) {
 	
 
 	
@@ -217,10 +273,11 @@ int read_dataset(char* filename, double*** d, int** r) {
 	int arrlen = 0;   // This is the next element to write	for both arrays
 	int j = 0;
 	
+	int n = 100; // Start with size 100 array for reading data; expand as needed
 	
 	//  Allocate a dynamic input size
-	double** data = malloc(100 * sizeof(double*));
-	int* response = malloc(100 * sizeof(int));
+	double** data = malloc(n * sizeof(double*));
+	int* response = malloc(n * sizeof(int));
 	
 	// Throw away the first line of the input file
 	fscanf(fpin, "%*[^\n]\n");
@@ -228,10 +285,10 @@ int read_dataset(char* filename, double*** d, int** r) {
 	// Read input to struct array
     int resp; int x1in; int x2in; int x3in; int x4in; int x5in; double x6in; double x7in; int x8in;
 	double x1d; double x2d; double x3d; double x4d; double x5d; double x8d; 
-	while (fscanf(fpin, "%i %i %i %i %i %i %lf %lf %i", &resp, &x1in, &x2in, &x3in, &x4in, &x5in, &x6in, &x7in, &x8in) == 9) {
+	while (fscanf(fpin, "%i %i %i %i %i %i %lf %lf %i", &resp, &x1in, &x2in, &x3in, &x4in, &x5in, &x6in, &x7in, &x8in) == colsize) {
 		
 		// if the allocated space is too small, make it bigger
-		if (arrlen >= n -1) {
+		if (arrlen >= n - 1) {
 			
 			data = realloc(data, n * 2 * sizeof(double*));
 			response = realloc(response, n * 2 * sizeof(int));
@@ -272,7 +329,7 @@ int main(int argc, char **argv)
 
 	char* filename = "./pima.dat";
 	
-	int colsize = 9;
+	int colsize = 9; // 8 columns of data and an adde, colsized intercept
 	double **data;
 	int *response;
 	
@@ -280,7 +337,7 @@ int main(int argc, char **argv)
 	
 	standardize(&data, arrlen, colsize);
 	
-	//Seed random number generator; 
+	//Seed random number genera18tor; 
 	srand(time(NULL));
 	int samplesize = 50;
 	
@@ -291,7 +348,12 @@ int main(int argc, char **argv)
 	double mu_0 = 0.05;
 	double mu_1 = 0.1;
 	
-	mislabeled_1(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1);
+	double B0[9] = {0, 1, -1, 1, 0, 0, 0, 0, 0}; // Hardcoded
+	
+	//mislabeled_1(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1);
+	//mislabeled_2(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, B0, colsize);
+	//mislabeled_3(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, colsize);
+	mislabeled_4(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, colsize);
 	
 
 	/*
