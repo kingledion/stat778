@@ -92,5 +92,9 @@
   </Settings>
   <VirtualDirectory Name="src">
     <File Name="main.c"/>
+    <File Name="datagen.h"/>
+    <File Name="datagen.c"/>
+    <File Name="logistic.h"/>
+    <File Name="logistic.c"/>
   </VirtualDirectory>
 </CodeLite_Project>
