@@ -58,13 +58,13 @@ int main(int argc, char **argv) {
 	
 	double** parsums = malloc(colsize * sizeof(double*));
 	for (int j = 0; j < colsize; j++) {
-		parsums[j] = malloc(100 * sizeof(double*));
+		parsums[j] = malloc(500 * sizeof(double*));
 	}
 	double par_mean = 0;
 	double par_var = 0;
 	double interval = 0;
 	
-	for (int i = 0; i < 100; i++) { // 100 iterations!
+	for (int i = 0; i < 500; i++) { // 100 iterations!
 	
 		selectRand(data, response, &dsub, &rsub, arrlen, samplesize);
 		
@@ -75,13 +75,13 @@ int main(int argc, char **argv) {
 	}
 	printf("No mislabel - Params\n");
 	for (int j = 0; j < colsize; j++) {
-		estGaussParams(parsums[j], 100, &par_mean, &par_var);
+		estGaussParams(parsums[j], 500, &par_mean, &par_var);
 		interval = 1.6 * sqrt(par_var);
 		printf("%lf %lf %lf\n", par_mean, par_mean - interval, par_mean + interval);
 
 	}
 	
-	for (int i = 0; i < 100; i++) { // 100 iterations!
+	for (int i = 0; i < 500; i++) { // 100 iterations!
 	
 		mislabeled_1(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1);
 		
@@ -92,15 +92,14 @@ int main(int argc, char **argv) {
 	}
 	printf("Mislabel 1 - Params\n");
 	for (int j = 0; j < colsize; j++) {
-		estGaussParams(parsums[j], 100, &par_mean, &par_var);
+		estGaussParams(parsums[j], 500, &par_mean, &par_var);
 		interval = 1.6 * sqrt(par_var);
 		printf("%lf %lf %lf\n", par_mean, par_mean - interval, par_mean + interval);
 
 	}
 	
 	
-	
-	for (int i = 0; i < 100; i++) { // 100 iterations!
+	for (int i = 0; i < 500; i++) { // 100 iterations!
 	
 		mislabeled_2(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, B0, colsize);
 		
@@ -111,14 +110,14 @@ int main(int argc, char **argv) {
 	}
 	printf("Mislabel 2 - Params\n");
 	for (int j = 0; j < colsize; j++) {
-		estGaussParams(parsums[j], 100, &par_mean, &par_var);
+		estGaussParams(parsums[j], 500, &par_mean, &par_var);
 		interval = 1.6 * sqrt(par_var);
 		printf("%lf %lf %lf\n", par_mean, par_mean - interval, par_mean + interval);
 
 	}
 	
 	
-	for (int i = 0; i < 100; i++) { // 100 iterations!
+	for (int i = 0; i < 500; i++) { // 100 iterations!
 	
 		mislabeled_3(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, colsize);
 		
@@ -129,14 +128,14 @@ int main(int argc, char **argv) {
 	}
 	printf("Mislabel 3 - Params\n");
 	for (int j = 0; j < colsize; j++) {
-		estGaussParams(parsums[j], 100, &par_mean, &par_var);
+		estGaussParams(parsums[j], 500, &par_mean, &par_var);
 		interval = 1.6 * sqrt(par_var);
 		printf("%lf %lf %lf\n", par_mean, par_mean - interval, par_mean + interval);
 
 	}
 	
 	
-	for (int i = 0; i < 100; i++) { // 100 iterations!
+	for (int i = 0; i < 500; i++) { // 100 iterations!
 	
 		mislabeled_4(data, response, &dsub, &rsub, arrlen, samplesize, mu_0, mu_1, colsize);
 		
@@ -147,32 +146,11 @@ int main(int argc, char **argv) {
 	}
 	printf("Mislabel 4 - Params\n");
 	for (int j = 0; j < colsize; j++) {
-		estGaussParams(parsums[j], 100, &par_mean, &par_var);
+		estGaussParams(parsums[j], 500, &par_mean, &par_var);
 		interval = 1.6 * sqrt(par_var);
 		printf("%lf %lf %lf\n", par_mean, par_mean - interval, par_mean + interval);
 
 	}
 		
-		
-		
-		
-		
-		
-		
-/*
-	
-
-	
-
-	
-
-	
-*/
-	
-	
-
-	
-
-	
 	return 0;
 }
