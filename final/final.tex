@@ -1,6 +1,9 @@
 \documentclass{article}
 \usepackage{amsmath}
+\usepackage{booktabs}
 \usepackage[margin=0.5in]{geometry}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 
 \setlength{\parskip}{\baselineskip}%
 \setlength{\parindent}{0pt}%
@@ -14,12 +17,89 @@
 
 \subsection*{How to run}
 
-The submitted code consists of five different files. The file \texttt{main.c} is the main program of the executable which calls to the other files. Reading data from the file, standardizing a dataset, and generating mislabellings are done in \texttt{datagen.c} with its header file \texttt{datagen.h}. Logistic regression and associated mathematical functions are done in \texttt{logistic.c} and associated header file \textt{logistic.h}
+The submitted code consists of six different files. The file \texttt{main.c} is one of the main executables which calls to the other files. This main has customizable command line arguments. Another main is contained in \texttt{longtest.c} which generates test data discussed later in this paper. Reading data from the file, standardizing a dataset, and generating mislabellings are done in \texttt{datagen.c} with its header file \texttt{datagen.h}. Logistic regression and associated mathematical functions are done in \texttt{logistic.c} and associated header file \texttt{logistic.h}
 
+The customizable executable is compiled by 
+
+\begin{quote}\verb!gcc -o final main.c datagen.c logistic.c -lm!\end{quote}
+
+and run by 
+
+\begin{quote}\verb!./final pima 0!.\end{quote}
+
+The arguments to this script are
+\begin{center}
+\begin{tabular}{ l|l}
+\hline
+Variable&Description\\
+\hline
+Data Source& Source of the response data:\\
+&'pima': unedited Pima dataset response values\\
+&'b0': authors' generated response variables from Hung et al., Section 4.2\\
+Mislabel Type&Strategy for generating mislabels from Hung et al., Section 4.1:\\
+&0: No mislabeling\\
+&1: Strategy S1 (y-dependent mislabeling)\\
+&2: Strategy S2 (x-dependent mislabeling)\\
+&3: Strategy S3 (random x, y-dependent mislabeling)\\
+&4: Strategy S4 (clustered x, y-dependent mislabeling)\\
+\end{tabular}
+\end{center}
+
+The generation of test data compiled by
+
+\begin{quote}\verb!gcc -o testgen midterm.c datagen.c logistic.c -lm!.\end{quote}
+
+and run by
+
+\begin{quote}\verb!./testgen!.\end{quote}
 
 \subsection*{Methodology}
 
+\subsubsection*{Generating samples from the Pima set}
+
+The Pima data set is read from its input data file (\texttt{pima.dat}) and divided into two parts, the feature and response variable. The features have a column of ones added as the first column to give an intercept. This produces a different ordering of feature numbers compared to the tables in Hung. For example, in Table 1 of Hung, the nine features start with $\beta_{01}$ = x1 as labeled in the data file; and end with $\beta_{09}$ = the intercept. In the computational parts of this project, the intercept is pre-pended. For any length 9 vector of dimension of a matrix, the 0th item is the intercept, while the 1st item corresponds to x1 from the data file. 
+
+Once the data is read, a sample from the data set is taken. There are 768 data points in the data set, but all samples taken are hardcoded to size 500 following Hung. A random sample isolumn taken using a simplified Reservoir algorithm. Since the total dataset is small, it is used in its entirety as the reservoir.
+
+\begin{algorithm}
+\caption{Generate a size SAMPLESIZE sample from DATA}
+\begin{algorithmic}
+\STATE{$output \gets$ empty length(SAMPLESIZE) array}
+\STATE{$selections \gets$ empty length(DATA) array}
+\STATE{$numleft \gets$ length(DATA)}
+\FOR{$ i \in (0, 1, ...$ SAMPLESIZE)}
+	\STATE{$n\gets\, $RANDOMUNIFORM()}
+	\STATE{$output[i] \gets\, $DATA$[selections[n]]$}
+	\STATE{$numleft \gets\, numleft - 1$ }
+	\STATE{$selections[n] \gets selections[numleft]$}
+\ENDFOR
+\end{algorithmic}\end{algorithm}
+
+After the data set is generated, it is standardized. Standardization is done on a columnwise basis to generate a standardized matrix $A^*$ from feature matrix $A$:
+
+\begin{align*}
+&\text{Mean for column} j:& \mu_j &= \frac{1}{n}\sum_{i=1}^{n} A_{i,j}\\
+&\text{Std Dev for column} j:& \sigma_j &= \sqrt{\dfrac{\sum_{i=1}^n \left(A_{i,j} - \mu_j\right)}{n-1}}\\
+&\text{Standarized Matrix}\,\, A^*:& A^*_{i,j} &= \frac{A_{i,j} - \mu_j}{\sigma_j}
+\end{align*}
+
+\subsubsection*{Generating the Author's response variables}
+
+There are two options for response variables. The first is to use the original Pima dataset as is, which represents the incidence of diabetes in females members of the Pima indian tribe, based on eight features describing the individuals. This options is selected by passing \texttt{'pima'} as the first command line argument to the \texttt{'main.c'} version of the executable. Since the response variables are already read from the data file and selected along with their matching features into a sample of 500, nothing more is done in this case. 
+
+The second is to use a 'true' regression parameter set as done by Hung. This option is selected by passing \texttt{'b0'} as the first command line argument to the \texttt{'main.c'} executable. 
+
+
+
+
 \subsubsection*{Generating mislabeled samples}
+
+There are five types of mislabeling schemes. The first scheme is to not mislabel anything, simply passing the dataset through as is. 
+
+
+
+
+
 
 
 
@@ -48,126 +128,84 @@ Thus the derivative of the log likelihood function is
 &=-\sum_i x_i\left(y_i-\pi_i\right).
 \end{align*} 
 The second derivative is
-$$\frac{d^2\mathcal{L}\left(\beta|x, y\right)}{d\beta^2} = \sum_i x_i^2\pi_i\left(1-\pi_i\right)$$ which is no-negative. Thus, the objective function is convex, and a global minimum for the objective function can be obtained by an iterative optimization methodology, such as Newton's method. 
+$$\frac{d^2\mathcal{L}\left(\beta|x, y\right)}{d\beta^2} = \sum_i x_i^2\pi_i\left(1-\pi_i\right)$$ which is no-negative. Thus, the objective function is convex, and a global minimum for the objective function can be obtained by an iterative optimization methodology, such as gradient descent Newton's method. 
+
+\subsubsection*{Solution using Gradient Descent}
+
+
+
+\subsubsection*{Solution using Newton-Raphson method}
 
 
 
 \subsection*{Simulation Studies}
-\subsubsection*{Two normal distributions}
-\begin{center}
-\begin{tabular}{ c c c c c c c c}
-\hline
-&&&&\multicolumn{2}{c}{$t$-test}&\multicolumn{2}{c}{Mann-Whitney}\\
-Sample 1&Sample 2&$n$&$\alpha$&Type 1 Error&Power&Type 1 Error&Power\\
-\hline
-$\mu = 0; \sigma^2 = 1$&$\mu = 0; \sigma^2 = 1$&25&0.90&0.1001&&0.0971\\
-&&&0.95&0.0523&&0.0513\\
-&&&0.99&0.0099&&0.0099\\
-&&50&0.90&0.0929&&0.0956\\
-&&&0.95&0.0463&&0.0496\\
-&&&0.99&0.0113&&0.0107\\
-&&100&0.90&0.0984&&0.0966\\
-&&&0.95&0.0495&&0.0494\\
-&&&0.99&0.0102&&0.0111\\
+\subsubsection*{Logistic Regression of Mislabel Possibilities}
+Table \ref{simresult} contains the results of 
+
+
+\begin{table}\centering
+\begin{tabular}{ c c c c c}
+\toprule
+&&&\multicolumn{2}{c}{95\% Confidence}\\
+Parameter&Mislabel Type&Mean&Minimum&Maximum\\
+\midrule
+Intercept&No Mislabel&-0.877&-0.746&-1.008\\
+&S1&-0.805&-0.667&-0.943\\
+&S2&-0.664&-0.543&-0.786\\
+&S3&-0.645&-0.504&-0.785\\
+&S4&-0.609&-0.440&-0.777\\
+\midrule
+x1&No Mislabel&0.428&0.288&0.567\\
+&S1&0.309&0.154&0.465\\
+&S2&0.297&0.135&0.460\\
+&S3&0.305&0.130&0.480\\
+&S4&0.307&0.158&0.457\\
+\midrule
+x2&No Mislabel&1.158&0.985&1.330\\
+&S1&0.857&0.702&1.011\\
+&S2&0.866&0.686&1.045\\
+&S3&0.853&0.652&1.055\\
+&S4&0.822&0.652&0.992\\
+\midrule
+x3&No Mislabel&-0.258&-0.132&-0.384\\
+&S1&-0.195&-0.044&-0.345\\
+&S2&-0.183&-0.051&-0.315\\
+&S3&-0.193&-0.064&-0.321\\
+&S4&-0.166&0.002&-0.166\\
+\midrule
+x4&No Mislabel&0.013&-0.131&0.158\\
+&S1&0.003&-0.152&0.158\\
+&S2&0.006&-0.137&0.148\\
+&S3&0.021&-0.140&0.181\\
+&S4&-0.002&-0.152&0.148\\
+\midrule
+x5&No Mislabel&-0.151&-0.012&-0.289\\
+&S1&-0.111&0.040&-0.264\\
+&S2&-0.102&0.078&-0.281\\
+&S3&-0.119&0.057&-0.295\\
+&S4&-0.091&0.053&-0.236\\
+\midrule
+x6&No Mislabel&0.706&0.550&0.862\\
+&S1&0.552&0.359&0.746\\
+&S2&0.512&0.352&0.672\\
+&S3&0.498&0.311&0.685\\
+&S4&0.470&0.288&0.652\\
+\midrule
+x7&No Mislabel&0.309&0.165&0.454\\
+&S1&0.239&0.085&0.393\\
+&S2&0.243&0.084&0.400\\
+&S3&0.236&0.093&0.380\\
+&S4&0.225&0.068&0.382\\
+\midrule
+x8&No Mislabel&0.162&0.015&0.310\\
+&S1&0.139&-0.010&0.288\\
+&S2&0.134&-0.042&0.309\\
+&S3&0.120&-0.035&0.275\\
+&S4&0.128&-0.058&0.313\\
+\bottomrule
 \end{tabular}
-\end{center}
-\begin{center}
-\begin{tabular}{ c c c c c c c c}
-\hline
-&&&&\multicolumn{2}{c}{$t$-test}&\multicolumn{2}{c}{Mann-Whitney}\\
-Sample 1&Sample 2&$n$&$\alpha$&Type 1 Error&Power&Type 1 Error&Power\\
-\hline
-$\mu = 0; \sigma^2 = 1$&$\mu = 1; \sigma^2 = 1$&25&0.90&&0.9618&&0.9529\\
-&&&0.95&&0.9305&&0.9170\\
-&&&0.99&&0.8014&&0.7713\\
-&&50&0.90&&0.9992&&0.9981\\
-&&&0.95&&0.9973&&0.9958\\
-&&&0.99&&0.9857&&0.9817\\
-&&100&0.90&&1.0000&&1.0000\\
-&&&0.95&&1.0000&&1.0000\\
-&&&0.99&&1.0000&&1.0000\\
-$\mu = 0; \sigma^2 = 2$&$\mu = 1; \sigma^2 = 2$&25&0.90&&0.7923&&0.7748\\
-&&&0.95&&0.6916&&0.6695\\
-&&&0.99&&0.4409&&0.4037\\
-&&50&0.90&&0.9634&&0.9585\\
-&&&0.95&&0.9327&&0.9209\\
-&&&0.99&&0.8094&&0.7853\\
-&&100&0.90&&0.9939&&0.9988\\
-&&&0.95&&0.9979&&0.9977\\
-&&&0.99&&0.9901&&0.9875\\
-\end{tabular}
-\end{center}
-
-When the two distributions are identical standard normal distributions, the two tests have a similar Type I error. For both tests, the Type I error is about the same as $1-\alpha$, which is to be expected by definition. A test with a significance level of 10\% ($\alpha = 0.90$) is expected to have an estimate significantly different from the true value 10\% of the time. This we observe for both tests and for all significance values and sample sizes. 
-
-When the two distributions are different, the power of the test decreases with increasing $\alpha$, but increases with increasing sample size. For a large enough sample size, the power of both tests will increase to unity, as seen using the sample size 100 with means $\mu_1=-; \mu_2 = 1$ and unit variance.
-
-With two different distributions, the $t$-test is marginally more powerful than the Mann-Whitney U test for all significance values and sample sizes. However, given the variance of the sample means ($\sigma^2/n$), none of these differences are themselves statistically significant with 10,000 iterations. 
-
-\subsubsection*{Two normal distributions; the second contaminated with large values}
-\begin{center}
-\begin{tabular}{ c c c c c c c c}
-\hline
-&&&&\multicolumn{2}{c}{$t$-test}&\multicolumn{2}{c}{Mann-Whitney}\\
-Sample 1&Sample 2&$n$&$\alpha$&Type 1 Error&Power&Type 1 Error&Power\\
-\hline
-$\mu = 0; \sigma^2 = 1$&$\mu = 0; \sigma^2 = 1$&25&0.90&&0.1098&&0.1041\\
-&&&0.95&&0.0509&&0.0516\\
-&&&0.99&&0.0083&&0.0100\\
-&&50&0.90&&0.1356&&0.1089\\
-&&&0.95&&0.0676&&0.0541\\
-&&&0.99&&0.0112&&0.0105\\
-&&100&0.90&&0.1920&&0.1059\\
-&&&0.95&&0.1037&&0.0519\\
-&&&0.99&&0.0202&&0.0096\\
-\end{tabular}
-\end{center}
-
-For two identical normal distributions, but with one contaminated with large values, both tests have difficulty distinguishing between them at $n = 25$. With this sample size, there is only a $1-(1-0.02)^{25} = 0.397$ chance that any one sample even has contamination; therefore we expect about 60\% of the samples to actually be from identical distributions. Therefore, the power o the test is understandably low. In fact, for the $n=25$ case, the power of the test is basically identical to the Type I error for two identical normal distributions. This is because both tests rely on the same metric; that is, rejection of the null hypothesis. What counts as a failure for two identical distributions will instead be a success when one distribution is contaminated by large numbers (that might not even be in a small sample).
-
-As the sample size increases, there is a 64\% chance at $n=50$ and an 87\% chance at $n=100$ that a sample with contain at least one contaminated value. One of the defining features of the Mann-Whitney U test is its insensitivity to outliers. This is seen clearly as the power of this test does not appreciably change with sample size. The $t$ test, on the other hand, has significantly increased power as the sample size increases. Since the $t$ test compares means, the presence of just one large number can significantly skew the test statistic. 
-
-
-\subsubsection*{Two exponential distributions}
-\begin{center}
-\begin{tabular}{ c c c c c c c c}
-\hline
-&&&&\multicolumn{2}{c}{$t$-test}&\multicolumn{2}{c}{Mann-Whitney}\\
-Sample 1&Sample 2&$n$&$\alpha$&Type 1 Error&Power&Type 1 Error&Power\\
-\hline
-$\beta = 1$&$\beta =1$&25&0.90&0.1004&&0.0960\\
-&&&0.95&0.0479&&0.0497\\
-&&&0.99&0.0079&&0.0081\\
-&&50&0.90&0.0971&&0.0992\\
-&&&0.95&0.0459&&0.0493\\
-&&&0.99&0.0112&&0.0105\\
-&&100&0.90&0.0985&&0.1001\\
-&&&0.95&0.0485&&0.0504\\
-&&&0.99&0.0108&&0.0106\\
-$\beta = 1$&$\beta =2$&25&0.90&&0.7678&&0.6679\\
-&&&0.95&&0.6381&&0.5457\\
-&&&0.99&&0.3279&&0.2813\\
-&&50&0.90&&0.9630&&0.9108\\
-&&&0.95&&0.9219&&0.8432\\
-&&&0.99&&0.7530&&0.6382\\
-&&100&0.90&&0.9994&&0.9935\\
-&&&0.95&&0.9975&&0.9867\\
-&&&0.99&&0.9853&&0.9451\\
-\end{tabular}
-\end{center}
-
-For identical exponential distributions, the two tests have roughly equal Type I error, and their error is roughly consistent with the expected significance given the $\alpha$ value. This is consistent with all sample sizes and significance values. 
-
-As the two distributions diverge in their parameter, both tests have some power to distinguish between them. However, due to the nature of the exponential distribution, the change in mean of a distribution is largely driven by a few large value outliers. The cumulative distribution function of an exponential function is $1-\exp{-x/\beta}$. For $\beta= 1$, we expect 63\% of the values to be below 1; for $\beta = 1.5$ we still expect 49\% of the values to be below 1. We would expect 86\% and 74\% respectively of the value to be below 2. For the rank-sum test, this represents the bulk of the values for both distributions that are well distributed with each other. At the upper end of the distribution, only a few outliers will distinguish the two distributions. For example, in a sample size of $n=100$, we expect for $\beta=1$ to have 0.6 values above 5, but with $\beta=1.5$ we would have 3.6 values above 5. This difference of about 3 expected 'large' numbers may be sufficient for the $t$ test to distinguish between the two distributions, but in many cases the outlier-insensitive rank-sum test will not be able to distinguish between the two.
-
-Both tests gain in power to distinguish between two exponential distributions as sample size increases. 
-
-\subsection*{Course thoughts}
-
-I like this course a lot. The practical application of programming to the statistical methods I have been learning over the last 3 years is very useful for getting a deeper understanding about how the statistical methods work. I only regret that we couldn't take the same approach with all classes. If I was in charge of everything, we would learn a programming language in an Intro to Stats Masters class, and then every other class would be developing and delivering working statistical models for homework as we learned the theory in class. 
-
-
-
+\caption{Distributions of Standardized Logistic Regression Parameters for 100 samples with sample size $n=500$}\label{simresult}
+\end{table}
 
 
 

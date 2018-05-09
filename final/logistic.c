@@ -248,12 +248,11 @@ void log_hess(double** X, int* y, double* lpi, double*** results, int n, int k) 
 // optimize beta using gradient descent
 double* logisticgd(double** X, int* y, int n, int k) {
 	
-	printf("Starting Gradient Descent logistic\n");
+	//printf("Starting Gradient Descent logistic\n");
 	
 	double tol = 0.000001;	
 	int maxiter = 1000000; // both of these should be passed as arguments
 	                   // No time to figure out how function overloading works in C!
-
 
 	// Using Gradient Descent
 		
@@ -295,8 +294,8 @@ double* logisticgd(double** X, int* y, int n, int k) {
 		
 
 		delta = sqrt(delta);
-		if (count % 100 == 0) {
-/*			printf("B\n");
+/*		if (count % 100 == 0) {
+			printf("B\n");
 			for (int j = 0; j < k; j++) {
 				printf("%.3lf ", B[j]);
 			}
@@ -304,13 +303,13 @@ double* logisticgd(double** X, int* y, int n, int k) {
 			printf("\nGradient\n");
 			for (int j = 0; j < k; j++) {
 				printf("%.3lf ", lgrad[j]);
-			}*/
+			}
 			
 			
 			
 			
 			printf("Step: %i complete; Last step dist: %lf\n", count, delta);
-		}
+		}*/
 		count += 1;
 		
 	}
@@ -323,14 +322,11 @@ double* logisticgd(double** X, int* y, int n, int k) {
 // optimize beta using newton-raphson
 double* logisticnr(double** X, int* y, int n, int k) {
 	
-	printf("Starting Newton-Raphson logistic\n");
+	//printf("Starting Newton-Raphson logistic\n");
 	
 	double tol = 0.000001;	
 	int maxiter = 1000; // both of these should be passed as arguments
 	                   // No time to figure out how function overloading works in C!
-
-
-
 
 	// Using Newton-Raphson
 	
@@ -435,7 +431,7 @@ double* logisticnr(double** X, int* y, int n, int k) {
 		
 		count += 1;
 		delta = sqrt(delta);
-		printf("Step: %i complete; Last step dist: %lf\n", count, delta);
+		//printf("Step: %i complete; Last step dist: %lf\n", count, delta);
 		
 	
 	}

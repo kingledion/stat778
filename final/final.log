@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.26)  3 MAY 2018 11:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.26)  9 MAY 2018 10:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -81,6 +81,26 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 631.
 LaTeX Info: Redefining \[ on input line 2735.
 LaTeX Info: Redefining \] on input line 2736.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen112
+\lightrulewidth=\dimen113
+\cmidrulewidth=\dimen114
+\belowrulesep=\dimen115
+\belowbottomsep=\dimen116
+\aboverulesep=\dimen117
+\abovetopsep=\dimen118
+\cmidrulesep=\dimen119
+\cmidrulekern=\dimen120
+\defaultaddspace=\dimen121
+\@cmidla=\count99
+\@cmidlb=\count100
+\@aboverulesep=\dimen122
+\@belowrulesep=\dimen123
+\@thisruleclass=\count101
+\@lastruleclass=\count102
+\@thisrulewidth=\dimen124
+)
 (/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2010/09/12 v5.6 Page Geometry
 
@@ -99,33 +119,61 @@ Package ifvtex Info: VTeX not detected.
 (/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
 Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
 )
-\Gm@cnth=\count99
-\Gm@cntv=\count100
-\c@Gm@tempcnt=\count101
-\Gm@bindingoffset=\dimen112
-\Gm@wd@mp=\dimen113
-\Gm@odd@mp=\dimen114
-\Gm@even@mp=\dimen115
-\Gm@layoutwidth=\dimen116
-\Gm@layoutheight=\dimen117
-\Gm@layouthoffset=\dimen118
-\Gm@layoutvoffset=\dimen119
+\Gm@cnth=\count103
+\Gm@cntv=\count104
+\c@Gm@tempcnt=\count105
+\Gm@bindingoffset=\dimen125
+\Gm@wd@mp=\dimen126
+\Gm@odd@mp=\dimen127
+\Gm@even@mp=\dimen128
+\Gm@layoutwidth=\dimen129
+\Gm@layoutheight=\dimen130
+\Gm@layouthoffset=\dimen131
+\Gm@layoutvoffset=\dimen132
 \Gm@dimlist=\toks20
-) (./final.aux)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithm.sty
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count106
+\float@exts=\toks21
+\float@box=\box28
+\@float@everytoks=\toks22
+\@floatcapt=\box29
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\@float@every@algorithm=\toks23
+\c@algorithm=\count107
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithmic.sty
+Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
+\c@ALC@unique=\count108
+\c@ALC@line=\count109
+\c@ALC@rem=\count110
+\c@ALC@depth=\count111
+\ALC@tlm=\skip46
+\algorithmicindent=\skip47
+)
+(./final.aux)
 \openout1 = `final.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 15.
+LaTeX Font Info:    ... okay on input line 15.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -166,13 +214,13 @@ LaTeX Font Info:    ... okay on input line 12.
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4] (./final.aux) 
 ) 
 Here is how much of TeX's memory you used:
- 1377 strings out of 494910
- 17200 string characters out of 6179836
- 88448 words of memory out of 5000000
- 4697 multiletter control sequences out of 15000+600000
+ 1719 strings out of 494910
+ 21455 string characters out of 6179836
+ 95647 words of memory out of 5000000
+ 5021 multiletter control sequences out of 15000+600000
  11035 words of font info for 40 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 27i,10n,32p,1175b,189s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 27i,12n,32p,693b,402s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texli
@@ -186,7 +234,7 @@ ts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pf
 b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on final.pdf (4 pages, 153228 bytes).
+Output written on final.pdf (4 pages, 157158 bytes).
 PDF statistics:
  73 PDF objects out of 1000 (max. 8388607)
  52 compressed objects within 1 object stream

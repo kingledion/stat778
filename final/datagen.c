@@ -32,7 +32,7 @@ void getRandNorm(double mean, double var, double* randnorm, int n)
 	}	
 }
 
-void selectRand(double** data, int* response, double** dsub, int* rsub, int arrlen, int samplesize) {
+void selectRand(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize) {
 	if (samplesize >= arrlen) {
 		printf("Sample size is larger than data array\n");
 		exit(1);
@@ -48,8 +48,8 @@ void selectRand(double** data, int* response, double** dsub, int* rsub, int arrl
 	
 	for (i = 0; i < samplesize; i++) {
 		n = rand() % numsleft;
-		dsub[i] = data[selections[n]];
-		rsub[i] = response[selections[n]];
+		(*dsub)[i] = data[selections[n]];
+		(*rsub)[i] = response[selections[n]];
 		selections[n] = selections[numsleft - 1];
 		numsleft--;
 	}
@@ -59,7 +59,7 @@ void selectRand(double** data, int* response, double** dsub, int* rsub, int arrl
 // Mislabels Y data under possibility S1
 void mislabeled_1(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1) {
 	
-	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
+	selectRand(data, response, dsub, rsub, arrlen, samplesize);
 	
 	double rnd;
 	
@@ -85,7 +85,7 @@ void mislabeled_1(double** data, int* response, double*** dsub, int** rsub, int 
 
 // Mislabels Y data under possibility S2
 void mislabeled_2(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, double* B0, int c) {
-	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
+	selectRand(data, response, dsub, rsub, arrlen, samplesize);
 	
 	double rnd;
 	
@@ -93,7 +93,7 @@ void mislabeled_2(double** data, int* response, double*** dsub, int** rsub, int 
 	
 	for (int i = 0; i < samplesize; i++) {
 		
-		printf("%i %i ", i, (*rsub)[i]);
+		//printf("%i %i ", i, (*rsub)[i]);
 		
 		rnd = rand()/ (double) RAND_MAX;
 		double B0x = 0;
@@ -112,13 +112,13 @@ void mislabeled_2(double** data, int* response, double*** dsub, int** rsub, int 
 				(*rsub)[i] = 0;
 			}
 		}
-		printf("%i\n", (*rsub)[i]);
+		//printf("%i\n", (*rsub)[i]);
 	}
 }
 
 // Mislabels Y data under possibility S3
 void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, int c) {
-	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
+	selectRand(data, response, dsub, rsub, arrlen, samplesize);
 	
 	double rnd;
 	
@@ -129,7 +129,7 @@ void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int 
 	double* b0 = malloc(c * sizeof(double));
 	double* b1 = malloc(c * sizeof(double));
 	
-	for (int j = 0; j < c; j++) {
+	for (int j = 0;	 j < c; j++) {
 		b0[j] = randnorms[j];
 		b1[j] = randnorms[j+c];
 	}
@@ -138,7 +138,7 @@ void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int 
 	
 	for (int i = 0; i < samplesize; i++) {
 		
-		printf("%i %i ", i, (*rsub)[i]);
+		//printf("%i %i ", i, (*rsub)[i]);
 		
 		rnd = rand()/ (double) RAND_MAX;
 
@@ -164,14 +164,14 @@ void mislabeled_3(double** data, int* response, double*** dsub, int** rsub, int 
 				(*rsub)[i] = 0;
 			}
 		}
-		printf("%i\n", (*rsub)[i]);
+		//printf("%i\n", (*rsub)[i]);
 	}
 	
 }
 
 // Mislabels Y data under possibility S4
 void mislabeled_4(double** data, int* response, double*** dsub, int** rsub, int arrlen, int samplesize, double mu0, double mu1, int c) {
-	selectRand(data, response, *dsub, *rsub, arrlen, samplesize);
+	selectRand(data, response, dsub, rsub, arrlen, samplesize);
 	
 	double rnd;
 	
@@ -185,7 +185,7 @@ void mislabeled_4(double** data, int* response, double*** dsub, int** rsub, int 
 	
 	for (int i = 0; i < samplesize; i++) {
 		
-		printf("%i %i ", i, (*rsub)[i]);
+		//printf("%i %i ", i, (*rsub)[i]);
 		
 		rnd = rand()/ (double) RAND_MAX;
 
@@ -207,50 +207,50 @@ void mislabeled_4(double** data, int* response, double*** dsub, int** rsub, int 
 				(*rsub)[i] = 0;
 			}
 		}
-		printf("%i\n", (*rsub)[i]);
+		//printf("%i\n", (*rsub)[i]);
 	}
 		
 }
 
-void standardize(double*** data, int n, int c) { // n rows and c columns
+void standardize(double*** data, int n, int k) { // n rows and c columns
 
 	// Note all j loops start at 1: first colum, colsizen is intercept, do not standardize
 
-	double* sums = malloc(c * sizeof(double)); // assume all doubles
-	double* sumsq = malloc(c * sizeof(double)); 
+	double* sums = malloc(k * sizeof(double)); // assume all doubles
+	double* sumsq = malloc(k * sizeof(double)); 
 	
 	// Initialize sums to zero
-	for (int j = 1; j < c; j++) {
+	for (int j = 1; j < k; j++) {
 		sums[j] = 0.0;
 		sumsq[j] = 0.0;
 	}
 	
 	// Sum all columns
 	for (int i = 0; i < n; i++) {
-		for (int j = 1; j < c; j++) {
+		for (int j = 1; j < k; j++) {
 			//printf("%i %	printf("Finished here\n");i %lf\n", i, j, (*data)[i][j]);
 			sums[j] += (*data)[i][j];
 		}
 	}
 	// Mean of all columns
-	for (int j = 1; j < c; j++) {
+	for (int j = 1; j < k; j++) {
 		sums[j] = sums[j] / n;
 	}
 
 	// Get sum of squares for variance
 	for (int i = 0; i < n; i++) {
-		for (int j = 1; j < c; j++) {
+		for (int j = 1; j < k; j++) {
 			sumsq[j] += pow((*data)[i][j] - sums[j], 2.0);
 		}
 	}
 	// Std Dev of all columns
-	for (int j = 1; j < c; j++) {
+	for (int j = 1; j < k; j++) {
 		sumsq[j] = pow(sumsq[j] / (n - 1), 0.5); // use unbiased estimator
 	}
 
 
 	for (int i = 0; i < n; i++) {
-		for ( int j = 1; j < c; j++) {
+		for ( int j = 1; j < k; j++) {
 			(*data)[i][j] = ((*data)[i][j] - sums[j])/sumsq[j];
 		}
 	}
@@ -323,4 +323,24 @@ int read_dataset(char* filename, double*** d, int** r, int colsize) {
 	*r = response;
 	
 	return arrlen;
+}
+
+// Generates logit response for a given set of parameters
+int* generateResponse(double** data, double* params, int n, int k) {
+	
+	int* response = malloc(n * sizeof(double));
+	double xb = 0;
+	
+	for (int i = 0; i < n; i++) {
+		xb = 0;
+		for (int j = 0; j < k; j++) {
+			xb += data[i][j] * params[j];
+		}
+		response[i] = rint(1/(1+exp(-1*xb)));
+	}
+	
+	return response;
+	
+	
+	
 }
